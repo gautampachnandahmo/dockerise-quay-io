@@ -17,4 +17,6 @@ jobs:
           owner: llvm
           base: master
           head: master
+          ignore_fail: false
+          merge_method: rebase
           auto_approve: false

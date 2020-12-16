@@ -1,4 +1,4 @@
-name: Sync-Fork-Auto
+name: Sync Fork
 
 on:
   schedule:
@@ -7,9 +7,9 @@ on:
 
 jobs:
   sync:
-
+    
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: tgymnich/fork-sync@v1.2
         with:
@@ -17,6 +17,3 @@ jobs:
           owner: llvm
           base: master
           head: master
-          ignore_fail: false
-          merge_method: rebase
-          auto_approve: false

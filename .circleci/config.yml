@@ -23,7 +23,7 @@ jobs:
        docker:
          - image: docker:17.05.0-ce-git
        steps: 
-        - log_into_quay
+        - deploy
 workflows:
   commit:
     jobs:

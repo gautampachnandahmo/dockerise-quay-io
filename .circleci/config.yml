@@ -15,9 +15,9 @@ commands:
       - run:
           name: Check install works
           command: |
-          URL='http://localhost:3000/'
-          HTTP_STATUS="$(curl -IL --silent $URL | grep HTTP )";
-          echo "${HTTP_STATUS}";
+            URL='http://localhost:3000/'
+            HTTP_STATUS="$(curl -IL --silent $URL | grep HTTP )";
+            echo "${HTTP_STATUS}";
 jobs:
     build-image:
        docker:

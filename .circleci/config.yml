@@ -21,7 +21,7 @@ commands:
 jobs:
     build-image:
        docker:
-         - image: docker:17.05.0-ce-git
+         - image: cimg/base:2020.01
        steps: 
         - deploy
 workflows:

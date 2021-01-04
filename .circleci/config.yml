@@ -12,12 +12,19 @@ commands:
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - setup_remote_docker
+      - run: |
+          docker build .
+          docker-compose up -d
       - run:
           name: Check install works
           command: |
             URL='http://localhost:3000/'
             HTTP_STATUS="$(curl -IL --silent $URL | grep HTTP )";
             echo "${HTTP_STATUS}";
+      - run:
+          name: Cleanup
+          command: |
+            docker-compose down
 jobs:
     build-image:
        docker:

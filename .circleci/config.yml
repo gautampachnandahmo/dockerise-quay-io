@@ -39,6 +39,8 @@ jobs:
     build-image:
        docker:
          - image: cimg/base:2020.01
+       environment:
+         TEST_RESULTS: /tmp/test-results
        steps: 
         - deploy
 workflows:

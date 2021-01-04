@@ -2,32 +2,22 @@ version: 2.1
 #orbs:
 #  docker: circleci/docker@1.5.0
 commands:
-  log_into_quay:
+  deploy:
     description: Log Docker agent into Quay.io
     steps:
-      - setup_remote_docker
-      - run: 
-          name: Check login
-          command: if [[ ! -z "$QUAY_USER" ]]; then  echo "Login Not empty $QUAY_USER"; else echo "Login Empty"; exit 1; fi
       - run:
-          name: Check credentials
-          command: if [[ ! -z "$QUAY_PASSWORD" ]]; then  echo "Credentials Not empty $QUAY_PASSWORD"; else echo "Credentials Empty"; exit 1; fi
-      - run:
-          name: Login to Quay
+          name: Install Docker Compose
           command: |
-            docker login --username "$QUAY_USER" --password "$QUAY_PASSWORD" quay.io
-      - run:
-          name: test pull
-          command: docker pull quay.io/gautampachnandahmo/gpa-test
-      - run:
-          name: Build Image
-          command: docker build . -t $CIRCLE_PROJECT_REPONAME/$CIRCLE_SHA1
-      - run:
-          name: Push to remote
-          command: docker push $CIRCLE_PROJECT_REPONAME/$CIRCLE_SHA1
-      - run:
-          name: Create manifest
-          command: echo $CIRCLE_REPO_NAME/$CIRCLE_SHA1 > manifest.txt
+            curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - setup_remote_docker
+      - run
+        name: Check install works
+        command: |
+          URL='http://localhost:3000/'
+          HTTP_STATUS="$(curl -IL --silent $URL | grep HTTP )";
+          echo "${HTTP_STATUS}";
 jobs:
     build-image:
        docker:

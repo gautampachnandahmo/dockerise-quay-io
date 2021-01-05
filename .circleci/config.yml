@@ -1,31 +1,56 @@
-version: 2.1
-commands:
-  deploy:
-    description: Test and app using docker-compose
+version: 2
+jobs:
+  build:
+    docker:
+      # using custom image, see .circleci/images/primary/Dockerfile
+      - image: circleci/node
+    environment:
+      TEST_RESULTS: /tmp/test-results
     steps:
+      - checkout
+      - run: mkdir -p $TEST_RESULTS
+      - run:
+          name: Run unit tests
+          command: |
+            echo "TODO"
       - setup_remote_docker
+      # This should go into custom primary image, here's only for the sake of explanation
+      - run:
+          name: Install Docker client
+          command: |
+            set -x
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+      # This should go into custom primary image, here's only for the sake of explanation
       - run:
           name: Install Docker Compose
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+            set -x
+            curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
       - run:
-          name: Deploy
+          name: Build service
+          command: make
+      - run:
+          name: Start container and verify it's working
           command: |
+            set -x
             docker-compose up -d
-      -run:
-          name: Stop
-          commnd: docker-compose down
-jobs:
-    build-image:
-       docker:
-         - image: cimg/base:2020.01
-       environment:
-         TEST_RESULTS: /tmp/test-results
-       steps: 
-        - deploy
-workflows:
-  commit:
-    jobs:
-      - build-image
+            # docker-compose will start 2 containers, the one with service will be named `contacts`
+            # we start another container with curl in the same network as `contacts`, this way we have
+            # all exposed ports from `contacts` available on `localhost` in this new container
+#            docker run --network container:contacts \
+#              appropriate/curl --retry 10 --retry-delay 1 --retry-connrefused http://localhost:8080/contacts/test
+      - deploy:
+          name: Build Docker image
+          command: |
+            TAG="0.1.${CIRCLE_BUILD_NUM}"
+#            docker build -t circleci/cci-demo-docker:$TAG .
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: raw-test-output
+      
+      - store_test_results:
+          path: /tmp/test-results

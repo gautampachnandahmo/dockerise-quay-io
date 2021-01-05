@@ -1,11 +1,8 @@
 version: 2.1
-orbs:
-  docker: circleci/docker@1.5.0
 commands:
   deploy:
     description: Test and app using docker-compose
     steps:
-      - checkout
       - setup_remote_docker
       - run:
           name: Install Docker Compose

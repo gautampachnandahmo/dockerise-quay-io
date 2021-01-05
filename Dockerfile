@@ -1,9 +1,11 @@
 from alpine
 maintainer <Gautam Pachnanda>
 
-RUN apk update
-RUN apk upgrade
-RUN apk add --no-cache bash
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache bash && \
+    set -eux && \
+    apk add --no-cache nodejs yarn
 
 RUN mkdir -p /user/src/app
 WORKDIR /usr/src/app
